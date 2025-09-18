@@ -1,100 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travlysis</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Travlysis</title>
+  <style>
+    /* ====== Styles ====== */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      color: #222;
+    }
+    header {
+      background: #3f51b5;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0 0 0.5rem 0;
+    }
+    nav a {
+      color: white;
+      margin: 0 1rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      padding: 1rem;
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .btn {
+      background: #3f51b5;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .btn:hover {
+      background: #303f9f;
+    }
+    .gps-info p, .stats div {
+      margin: 0.3rem 0;
+    }
+    .trip-list {
+      margin-top: 1rem;
+    }
+    .trip-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      background: #f1f1f1;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+    .chart-placeholder {
+      margin-top: 1rem;
+      background: #eee;
+      padding: 2rem;
+      text-align: center;
+      border-radius: 6px;
+      color: #666;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #3f51b5;
+      color: white;
+      margin-top: 2rem;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Travlysis Web App</h1>
-        <nav>
-            <a href="#tracker">GPS Tracker</a>
-            <a href="#analytics">Statistics & Analytics</a>
-            <a href="#survey">Travel Survey</a>
-            <a href="#review">Trip Review</a>
-        </nav>
-    </header>
+  <header>
+    <h1>Travlysis Web App</h1>
+    <nav>
+      <a href="#tracker">GPS Tracker</a>
+      <a href="#analytics">Statistics & Analytics</a>
+      <a href="#survey">Travel Survey</a>
+      <a href="#review">Trip Review</a>
+    </nav>
+  </header>
 
-    <main>
-        <!-- GPS Tracker Section -->
-        <section id="tracker" class="card">
-            <h2>GPS Tracker</h2>
-            <p>Track your journey in real time and collect location data as you move.</p>
-            <button class="btn">Start Tracking</button>
-            <div class="gps-info">
-                <p><strong>Current Location:</strong> <span id="location">Not Tracking</span></p>
-                <p><strong>Distance Travelled:</strong> <span id="distance">0 km</span></p>
-            </div>
-        </section>
+  <main>
+    <!-- GPS Tracker Section -->
+    <section id="tracker" class="card">
+      <h2>GPS Tracker</h2>
+      <p>Track your journey in real time and collect location data as you move.</p>
+      <button id="startTracking" class="btn">Start Tracking</button>
+      <div class="gps-info">
+        <p><strong>Current Location:</strong> <span id="location">Not Tracking</span></p>
+        <p><strong>Distance Travelled:</strong> <span id="distance">0 km</span></p>
+      </div>
+    </section>
 
-        <!-- Statistics & Analytics Section -->
-        <section id="analytics" class="card">
-            <h2>Statistics & Analytics</h2>
-            <p>Visualize your travel data: distance, speed, duration, and route.</p>
-            <div class="stats">
-                <div>Time of Day: <span id="stat-time">--:--</span></div>
-                <div>Duration: <span id="stat-duration">0 min</span></div>
-                <div>Speed: <span id="stat-speed">0 km/h</span></div>
-                <div>Route: <span id="stat-route">No route yet</span></div>
-                <div>Mode of Transport: <span id="stat-mode">Unknown</span></div>
-            </div>
-            <!-- Placeholder for chart -->
-            <div class="chart-placeholder">[Analytics Chart Here]</div>
-        </section>
+    <!-- Statistics & Analytics Section -->
+    <section id="analytics" class="card">
+      <h2>Statistics & Analytics</h2>
+      <p>Visualize your travel data: distance, speed, duration, and route.</p>
+      <div class="stats">
+        <div>Time of Day: <span id="stat-time">--:--</span></div>
+        <div>Duration: <span id="stat-duration">0 min</span></div>
+        <div>Speed: <span id="stat-speed">0 km/h</span></div>
+        <div>Route: <span id="stat-route">No route yet</span></div>
+        <div>Mode of Transport: <span id="stat-mode">Unknown</span></div>
+      </div>
+      <div class="chart-placeholder">[Analytics Chart Here]</div>
+    </section>
 
-        <!-- Travel Survey Section -->
-        <section id="survey" class="card">
-            <h2>Travel Survey</h2>
-            <p>Help us improve transport systems by filling out this survey about your travel habits.</p>
-            <form>
-                <label>
-                    Why did you travel today?
-                    <input type="text" name="purpose" required>
-                </label>
-                <label>
-                    What was your main mode of transport?
-                    <select name="transport">
-                        <option>Car</option>
-                        <option>Bicycle</option>
-                        <option>Public Transport</option>
-                        <option>Walking</option>
-                        <option>Other</option>
-                    </select>
-                </label>
-                <label>
-                    How far did you travel?
-                    <input type="number" name="distance" min="0" step="0.1" required> km
-                </label>
-                <button class="btn" type="submit">Submit Survey</button>
-            </form>
-        </section>
+    <!-- Travel Survey Section -->
+    <section id="survey" class="card">
+      <h2>Travel Survey</h2>
+      <p>Help us improve transport systems by filling out this survey about your travel habits.</p>
+      <form id="surveyForm">
+        <label>
+          Why did you travel today?
+          <input type="text" name="purpose" required>
+        </label><br><br>
+        <label>
+          What was your main mode of transport?
+          <select name="transport">
+            <option>Car</option>
+            <option>Bicycle</option>
+            <option>Public Transport</option>
+            <option>Walking</option>
+            <option>Other</option>
+          </select>
+        </label><br><br>
+        <label>
+          How far did you travel?
+          <input type="number" name="distance" min="0" step="0.1" required> km
+        </label><br><br>
+        <button class="btn" type="submit">Submit Survey</button>
+      </form>
+      <p id="surveyMsg" style="color: green; font-weight: bold;"></p>
+    </section>
 
-        <!-- Trip Review & User Input Section -->
-        <section id="review" class="card">
-            <h2>Trip Review</h2>
-            <p>Review and adjust your trip details. Help our algorithms improve accuracy!</p>
-            <div class="trip-list">
-                <div class="trip-item">
-                    <span>Trip 1: 08:30 - 09:00, 5 km, Bicycle</span>
-                    <button class="btn">Edit</button>
-                </div>
-                <div class="trip-item">
-                    <span>Trip 2: 12:00 - 12:20, 2 km, Walking</span>
-                    <button class="btn">Edit</button>
-                </div>
-                <!-- Add more trips dynamically -->
-            </div>
-            <button class="btn confirm-btn">Confirm All Trips</button>
-        </section>
-    </main>
+    <!-- Trip Review Section -->
+    <section id="review" class="card">
+      <h2>Trip Review</h2>
+      <p>Review and adjust your trip details. Help our algorithms improve accuracy!</p>
+      <div class="trip-list" id="tripList">
+        <div class="trip-item">
+          <span>Trip 1: 08:30 - 09:00, 5 km, Bicycle</span>
+          <button class="btn">Edit</button>
+        </div>
+        <div class="trip-item">
+          <span>Trip 2: 12:00 - 12:20, 2 km, Walking</span>
+          <button class="btn">Edit</button>
+        </div>
+      </div>
+      <button class="btn confirm-btn">Confirm All Trips</button>
+    </section>
+  </main>
 
-    <footer>
-        <p>&copy; 2025 Travlysis Web App | For a better transport future</p>
-    </footer>
+  <footer>
+    <p>&copy; 2025 Travlysis Web App | For a better transport future</p>
+  </footer>
 
-    <!-- Correct way to load your JavaScript file -->
-    <script src="script.js"></script>
+  <script>
+    // ====== JavaScript ======
+
+    // GPS Tracker Simulation
+    const startBtn = document.getElementById("startTracking");
+    const locSpan = document.getElementById("location");
+    const distSpan = document.getElementById("distance");
+    let tracking = false;
+    let distance = 0;
+
+    startBtn.addEventListener("click", () => {
+      tracking = !tracking;
+      if (tracking) {
+        startBtn.textContent = "Stop Tracking";
+        locSpan.textContent = "Latitude: 28.6, Longitude: 77.2";
+        const interval = setInterval(() => {
+          if (!tracking) { clearInterval(interval); return; }
+          distance += 0.5;
+          distSpan.textContent = distance.toFixed(1) + " km";
+        }, 2000);
+      } else {
+        startBtn.textContent = "Start Tracking";
+        locSpan.textContent = "Not Tracking";
+      }
+    });
+
+    // Survey Handling
+    const surveyForm = document.getElementById("surveyForm");
+    const surveyMsg = document.getElementById("surveyMsg");
+    surveyForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      surveyMsg.textContent = "✅ Thank you! Your survey has been submitted.";
+      surveyForm.reset();
+    });
+
+    // Trip Review Edit Button
+    document.querySelectorAll(".trip-item button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        alert("Edit functionality coming soon!");
+      });
+    });
+  </script>
 </body>
 </html>
