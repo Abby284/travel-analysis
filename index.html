@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travlysis</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Travlysis Web App</h1>
+        <nav>
+            <a href="#tracker">GPS Tracker</a>
+            <a href="#analytics">Statistics & Analytics</a>
+            <a href="#survey">Travel Survey</a>
+            <a href="#review">Trip Review</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- GPS Tracker Section -->
+        <section id="tracker" class="card">
+            <h2>GPS Tracker</h2>
+            <p>Track your journey in real time and collect location data as you move.</p>
+            <button class="btn">Start Tracking</button>
+            <div class="gps-info">
+                <p><strong>Current Location:</strong> <span id="location">Not Tracking</span></p>
+                <p><strong>Distance Travelled:</strong> <span id="distance">0 km</span></p>
+            </div>
+        </section>
+
+        <!-- Statistics & Analytics Section -->
+        <section id="analytics" class="card">
+            <h2>Statistics & Analytics</h2>
+            <p>Visualize your travel data: distance, speed, duration, and route.</p>
+            <div class="stats">
+                <div>Time of Day: <span id="stat-time">--:--</span></div>
+                <div>Duration: <span id="stat-duration">0 min</span></div>
+                <div>Speed: <span id="stat-speed">0 km/h</span></div>
+                <div>Route: <span id="stat-route">No route yet</span></div>
+                <div>Mode of Transport: <span id="stat-mode">Unknown</span></div>
+            </div>
+            <!-- Placeholder for chart -->
+            <div class="chart-placeholder">[Analytics Chart Here]</div>
+        </section>
+
+        <!-- Travel Survey Section -->
+        <section id="survey" class="card">
+            <h2>Travel Survey</h2>
+            <p>Help us improve transport systems by filling out this survey about your travel habits.</p>
+            <form>
+                <label>
+                    Why did you travel today?
+                    <input type="text" name="purpose" required>
+                </label>
+                <label>
+                    What was your main mode of transport?
+                    <select name="transport">
+                        <option>Car</option>
+                        <option>Bicycle</option>
+                        <option>Public Transport</option>
+                        <option>Walking</option>
+                        <option>Other</option>
+                    </select>
+                </label>
+                <label>
+                    How far did you travel?
+                    <input type="number" name="distance" min="0" step="0.1" required> km
+                </label>
+                <button class="btn" type="submit">Submit Survey</button>
+            </form>
+        </section>
+
+        <!-- Trip Review & User Input Section -->
+        <section id="review" class="card">
+            <h2>Trip Review</h2>
+            <p>Review and adjust your trip details. Help our algorithms improve accuracy!</p>
+            <div class="trip-list">
+                <div class="trip-item">
+                    <span>Trip 1: 08:30 - 09:00, 5 km, Bicycle</span>
+                    <button class="btn">Edit</button>
+                </div>
+                <div class="trip-item">
+                    <span>Trip 2: 12:00 - 12:20, 2 km, Walking</span>
+                    <button class="btn">Edit</button>
+                </div>
+                <!-- Add more trips dynamically -->
+            </div>
+            <button class="btn confirm-btn">Confirm All Trips</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Travlysis Web App | For a better transport future</p>
+    </footer>
+</body>
+</html>
