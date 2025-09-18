@@ -1,215 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Travlysis</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Analysis</title>
+
   <style>
-    /* ====== Styles ====== */
+    /* ---------- Global Styles ---------- */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      color: #222;
+      background: linear-gradient(135deg, #1f1f1f, #3a3a3a);
+      color: #f1f1f1;
+      text-align: center;
     }
+
     header {
-      background: #3f51b5;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0 0 0.5rem 0;
-    }
-    nav a {
-      color: white;
-      margin: 0 1rem;
-      text-decoration: none;
+      background: #ff4757;
+      padding: 20px;
+      font-size: 2rem;
       font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
-    nav a:hover {
-      text-decoration: underline;
+
+    section {
+      padding: 40px 20px;
     }
-    main {
-      padding: 1rem;
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      color: #ff6b81;
     }
-    .card {
-      background: white;
-      border-radius: 8px;
-      padding: 1rem;
-      margin: 1rem 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+    /* ---------- Chart Container ---------- */
+    .chart-container {
+      width: 90%;
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
     }
-    .btn {
-      background: #3f51b5;
+
+    /* ---------- Table ---------- */
+    table {
+      width: 90%;
+      margin: 40px auto;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    th {
+      background: #ff4757;
       color: white;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 0.5rem;
     }
-    .btn:hover {
-      background: #303f9f;
+
+    tr:nth-child(even) {
+      background: rgba(255,255,255,0.05);
     }
-    .gps-info p, .stats div {
-      margin: 0.3rem 0;
-    }
-    .trip-list {
-      margin-top: 1rem;
-    }
-    .trip-item {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
-      background: #f1f1f1;
-      padding: 0.5rem;
-      border-radius: 4px;
-    }
-    .chart-placeholder {
-      margin-top: 1rem;
-      background: #eee;
-      padding: 2rem;
-      text-align: center;
-      border-radius: 6px;
-      color: #666;
-    }
+
+    /* ---------- Footer ---------- */
     footer {
-      text-align: center;
-      padding: 1rem;
-      background: #3f51b5;
-      color: white;
-      margin-top: 2rem;
+      background: #2f3542;
+      padding: 15px;
+      margin-top: 50px;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Travlysis Web App</h1>
-    <nav>
-      <a href="#tracker">GPS Tracker</a>
-      <a href="#analytics">Statistics & Analytics</a>
-      <a href="#survey">Travel Survey</a>
-      <a href="#review">Trip Review</a>
-    </nav>
-  </header>
+  <header>🌍 Travel Analysis Dashboard</header>
 
-  <main>
-    <!-- GPS Tracker Section -->
-    <section id="tracker" class="card">
-      <h2>GPS Tracker</h2>
-      <p>Track your journey in real time and collect location data as you move.</p>
-      <button id="startTracking" class="btn">Start Tracking</button>
-      <div class="gps-info">
-        <p><strong>Current Location:</strong> <span id="location">Not Tracking</span></p>
-        <p><strong>Distance Travelled:</strong> <span id="distance">0 km</span></p>
-      </div>
-    </section>
+  <section>
+    <h2>Top Travel Destinations (2025)</h2>
+    <div class="chart-container">
+      <canvas id="travelChart"></canvas>
+    </div>
+  </section>
 
-    <!-- Statistics & Analytics Section -->
-    <section id="analytics" class="card">
-      <h2>Statistics & Analytics</h2>
-      <p>Visualize your travel data: distance, speed, duration, and route.</p>
-      <div class="stats">
-        <div>Time of Day: <span id="stat-time">--:--</span></div>
-        <div>Duration: <span id="stat-duration">0 min</span></div>
-        <div>Speed: <span id="stat-speed">0 km/h</span></div>
-        <div>Route: <span id="stat-route">No route yet</span></div>
-        <div>Mode of Transport: <span id="stat-mode">Unknown</span></div>
-      </div>
-      <div class="chart-placeholder">[Analytics Chart Here]</div>
-    </section>
-
-    <!-- Travel Survey Section -->
-    <section id="survey" class="card">
-      <h2>Travel Survey</h2>
-      <p>Help us improve transport systems by filling out this survey about your travel habits.</p>
-      <form id="surveyForm">
-        <label>
-          Why did you travel today?
-          <input type="text" name="purpose" required>
-        </label><br><br>
-        <label>
-          What was your main mode of transport?
-          <select name="transport">
-            <option>Car</option>
-            <option>Bicycle</option>
-            <option>Public Transport</option>
-            <option>Walking</option>
-            <option>Other</option>
-          </select>
-        </label><br><br>
-        <label>
-          How far did you travel?
-          <input type="number" name="distance" min="0" step="0.1" required> km
-        </label><br><br>
-        <button class="btn" type="submit">Submit Survey</button>
-      </form>
-      <p id="surveyMsg" style="color: green; font-weight: bold;"></p>
-    </section>
-
-    <!-- Trip Review Section -->
-    <section id="review" class="card">
-      <h2>Trip Review</h2>
-      <p>Review and adjust your trip details. Help our algorithms improve accuracy!</p>
-      <div class="trip-list" id="tripList">
-        <div class="trip-item">
-          <span>Trip 1: 08:30 - 09:00, 5 km, Bicycle</span>
-          <button class="btn">Edit</button>
-        </div>
-        <div class="trip-item">
-          <span>Trip 2: 12:00 - 12:20, 2 km, Walking</span>
-          <button class="btn">Edit</button>
-        </div>
-      </div>
-      <button class="btn confirm-btn">Confirm All Trips</button>
-    </section>
-  </main>
+  <section>
+    <h2>Travel Data Summary</h2>
+    <table>
+      <tr>
+        <th>Destination</th>
+        <th>Visitors</th>
+        <th>Popularity</th>
+      </tr>
+      <tr>
+        <td>Paris</td>
+        <td>1.2M</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>Tokyo</td>
+        <td>950K</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>New York</td>
+        <td>870K</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>Dubai</td>
+        <td>780K</td>
+        <td>⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>Rome</td>
+        <td>720K</td>
+        <td>⭐⭐⭐</td>
+      </tr>
+    </table>
+  </section>
 
   <footer>
-    <p>&copy; 2025 Travlysis Web App | For a better transport future</p>
+    © 2025 Travel Analysis | Built with ❤️ for explorers
   </footer>
 
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // ====== JavaScript ======
-
-    // GPS Tracker Simulation
-    const startBtn = document.getElementById("startTracking");
-    const locSpan = document.getElementById("location");
-    const distSpan = document.getElementById("distance");
-    let tracking = false;
-    let distance = 0;
-
-    startBtn.addEventListener("click", () => {
-      tracking = !tracking;
-      if (tracking) {
-        startBtn.textContent = "Stop Tracking";
-        locSpan.textContent = "Latitude: 28.6, Longitude: 77.2";
-        const interval = setInterval(() => {
-          if (!tracking) { clearInterval(interval); return; }
-          distance += 0.5;
-          distSpan.textContent = distance.toFixed(1) + " km";
-        }, 2000);
-      } else {
-        startBtn.textContent = "Start Tracking";
-        locSpan.textContent = "Not Tracking";
+    // ---------- Chart Script ----------
+    const ctx = document.getElementById('travelChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Paris', 'Tokyo', 'New York', 'Dubai', 'Rome'],
+        datasets: [{
+          label: 'Visitors (in millions)',
+          data: [1.2, 0.95, 0.87, 0.78, 0.72],
+          backgroundColor: ['#ff4757', '#ffa502', '#1e90ff', '#2ed573', '#ff6b81'],
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: '#f1f1f1' } }
+        },
+        scales: {
+          x: { ticks: { color: '#f1f1f1' } },
+          y: { ticks: { color: '#f1f1f1' } }
+        }
       }
-    });
-
-    // Survey Handling
-    const surveyForm = document.getElementById("surveyForm");
-    const surveyMsg = document.getElementById("surveyMsg");
-    surveyForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      surveyMsg.textContent = "✅ Thank you! Your survey has been submitted.";
-      surveyForm.reset();
-    });
-
-    // Trip Review Edit Button
-    document.querySelectorAll(".trip-item button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        alert("Edit functionality coming soon!");
-      });
     });
   </script>
 </body>
