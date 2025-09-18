@@ -3,48 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Travlysis - Travel Tracker</title>
+  <title>Travlysis - TravelVu Inspired</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
       background: #121212;
       color: #eee;
-      margin: 0;
-      padding: 0;
     }
     header {
       background: #ff4757;
       padding: 15px;
       font-size: 1.5rem;
       font-weight: bold;
-      color: white;
+      text-align: center;
     }
     .container {
-      max-width: 800px;
-      margin: 20px auto;
       padding: 20px;
+      max-width: 900px;
+      margin: auto;
     }
-    .box {
-      background: #1e1e1e;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-    h2 { color: #ff4757; }
     button {
       padding: 10px 15px;
-      margin: 10px;
+      margin: 8px 5px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       background: #ff4757;
-      color: #fff;
+      color: white;
       font-weight: bold;
       transition: 0.2s;
     }
     button:hover { background: #ff6b81; }
+    .trip-card {
+      background: #1e1e1e;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .trip-card h3 { margin: 0; color: #ff4757; }
+    .trip-card p { margin: 5px 0; }
+    .form-box {
+      background: #1e1e1e;
+      padding: 15px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
     input, select {
       padding: 8px;
       margin: 8px;
@@ -53,38 +60,28 @@
       width: 90%;
       max-width: 300px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: #2a2a2a;
+    .map {
+      height: 200px;
+      margin-top: 10px;
+      border-radius: 8px;
     }
-    th, td {
-      border: 1px solid #444;
-      padding: 10px;
-      text-align: center;
-    }
-    th {
-      background: #ff4757;
-      color: white;
-    }
-    td { color: #ccc; }
   </style>
 </head>
 <body>
-  <header>🌍 Travlysis - Travel Tracker</header>
+  <header>🌍 Travlysis</header>
 
   <div class="container">
-    <!-- GPS Tracking -->
-    <div class="box">
-      <h2>📍 GPS Location</h2>
-      <button onclick="getLocation()">Get Current Location</button>
-      <p id="gps">Location will appear here...</p>
+    <!-- GPS Tracker -->
+    <div class="form-box">
+      <h2>📍 GPS Tracking</h2>
+      <button onclick="startTracking()">Start Tracking</button>
+      <button onclick="stopTracking()">Stop Tracking</button>
+      <p id="gps">Not tracking...</p>
     </div>
 
-    <!-- Manual Entry -->
-    <div class="box">
-      <h2>✏️ Manual Travel Entry</h2>
+    <!-- Manual Trip Entry -->
+    <div class="form-box">
+      <h2>✏️ Add Trip Manually</h2>
       <form id="manualForm">
         <input type="text" id="place" placeholder="Place visited" required><br>
         <input type="number" id="distance" placeholder="Distance (km)" required><br>
@@ -98,60 +95,174 @@
         </select><br>
         <button type="submit">Add Trip</button>
       </form>
-      <table id="dataTable">
-        <tr>
-          <th>Place</th>
-          <th>Distance (km)</th>
-          <th>Mode</th>
-        </tr>
-      </table>
     </div>
+
+    <!-- Trips Display -->
+    <h2>🗂️ Your Trips</h2>
+    <div id="trips"></div>
   </div>
 
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // ---------- GPS Tracker ----------
-    function getLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
-      } else {
-        document.getElementById("gps").innerText = "Geolocation is not supported by this browser.";
-      }
+    let trips = JSON.parse(localStorage.getItem("trips")) || [];
+    let watchId = null;
+    let activeTrip = null;
+    let lastPos = null;
+
+    // Haversine formula for distance (km)
+    function getDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
     }
 
-    function showPosition(position) {
-      document.getElementById("gps").innerText =
-        "Latitude: " + position.coords.latitude.toFixed(5) +
-        ", Longitude: " + position.coords.longitude.toFixed(5);
+    // Render trips with maps
+    function renderTrips() {
+      const tripsDiv = document.getElementById("trips");
+      tripsDiv.innerHTML = "";
+      trips.forEach((trip, index) => {
+        let card = document.createElement("div");
+        card.className = "trip-card";
+        card.innerHTML = `
+          <h3>Trip ${index + 1}</h3>
+          <p><strong>Place:</strong> ${trip.place}</p>
+          <p><strong>Distance:</strong> ${trip.distance.toFixed(2)} km</p>
+          <p><strong>Mode:</strong> ${trip.mode}</p>
+          <p><strong>Time:</strong> ${trip.time}</p>
+          <div id="map${index}" class="map"></div>
+          <button onclick="editTrip(${index})">✏️ Edit</button>
+          <button onclick="deleteTrip(${index})">🗑️ Delete</button>
+        `;
+        tripsDiv.appendChild(card);
+
+        // Initialize Leaflet map
+        setTimeout(() => {
+          let map = L.map(`map${index}`).setView([trip.lat || 20, trip.lon || 0], 13);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap contributors"
+          }).addTo(map);
+          if (trip.path && trip.path.length) {
+            let polyline = L.polyline(trip.path, { color: 'red' }).addTo(map);
+            map.fitBounds(polyline.getBounds());
+            L.marker(trip.path[0]).addTo(map).bindPopup("Start");
+            L.marker(trip.path[trip.path.length - 1]).addTo(map).bindPopup("End");
+          }
+        }, 100);
+      });
     }
 
-    function showError(error) {
-      let msg = "";
-      switch(error.code) {
-        case error.PERMISSION_DENIED: msg = "❌ User denied GPS request."; break;
-        case error.POSITION_UNAVAILABLE: msg = "⚠️ Location unavailable."; break;
-        case error.TIMEOUT: msg = "⌛ Request timed out."; break;
-        default: msg = "Unknown error."; break;
-      }
-      document.getElementById("gps").innerText = msg;
+    function saveTrips() {
+      localStorage.setItem("trips", JSON.stringify(trips));
+      renderTrips();
     }
 
-    // ---------- Manual Data Entry ----------
-    const form = document.getElementById("manualForm");
-    const table = document.getElementById("dataTable");
-
-    form.addEventListener("submit", function(e) {
+    // Manual entry
+    document.getElementById("manualForm").addEventListener("submit", function(e) {
       e.preventDefault();
       let place = document.getElementById("place").value;
-      let distance = document.getElementById("distance").value;
+      let distance = parseFloat(document.getElementById("distance").value);
       let mode = document.getElementById("mode").value;
 
-      let row = table.insertRow();
-      row.insertCell(0).innerText = place;
-      row.insertCell(1).innerText = distance;
-      row.insertCell(2).innerText = mode;
-
-      form.reset();
+      trips.push({
+        place,
+        distance,
+        mode,
+        time: new Date().toLocaleString(),
+        lat: null,
+        lon: null,
+        path: []
+      });
+      saveTrips();
+      this.reset();
     });
+
+    // Edit trip
+    function editTrip(index) {
+      let newPlace = prompt("Enter new place:", trips[index].place);
+      let newDistance = prompt("Enter new distance:", trips[index].distance);
+      let newMode = prompt("Enter new mode:", trips[index].mode);
+
+      if (newPlace && newDistance && newMode) {
+        trips[index].place = newPlace;
+        trips[index].distance = parseFloat(newDistance);
+        trips[index].mode = newMode;
+        saveTrips();
+      }
+    }
+
+    // Delete trip
+    function deleteTrip(index) {
+      trips.splice(index, 1);
+      saveTrips();
+    }
+
+    // GPS Tracking
+    function startTracking() {
+      if (navigator.geolocation) {
+        activeTrip = {
+          place: "Tracked Trip",
+          distance: 0,
+          mode: "Unknown",
+          time: new Date().toLocaleString(),
+          lat: null,
+          lon: null,
+          path: []
+        };
+        lastPos = null;
+
+        watchId = navigator.geolocation.watchPosition(
+          pos => {
+            document.getElementById("gps").innerText =
+              `Lat: ${pos.coords.latitude.toFixed(5)}, Lon: ${pos.coords.longitude.toFixed(5)}`;
+
+            if (lastPos) {
+              let d = getDistance(
+                lastPos.lat, lastPos.lon,
+                pos.coords.latitude, pos.coords.longitude
+              );
+              activeTrip.distance += d;
+            }
+
+            lastPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+
+            activeTrip.lat = pos.coords.latitude;
+            activeTrip.lon = pos.coords.longitude;
+            activeTrip.path.push([pos.coords.latitude, pos.coords.longitude]);
+
+            renderTrips();
+          },
+          err => {
+            document.getElementById("gps").innerText = "Error: " + err.message;
+          },
+          { enableHighAccuracy: true }
+        );
+      } else {
+        document.getElementById("gps").innerText = "Geolocation not supported.";
+      }
+    }
+
+    function stopTracking() {
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        if (activeTrip) {
+          trips.push(activeTrip);
+          saveTrips();
+          activeTrip = null;
+        }
+        document.getElementById("gps").innerText = "Tracking stopped.";
+      }
+    }
+
+    // Initial render
+    renderTrips();
   </script>
 </body>
 </html>
