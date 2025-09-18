@@ -3,156 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Travel Analysis</title>
-
+  <title>Travlysis - Travel Tracker</title>
   <style>
-    /* ---------- Global Styles ---------- */
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #1f1f1f, #3a3a3a);
-      color: #f1f1f1;
       text-align: center;
+      background: #121212;
+      color: #eee;
+      margin: 0;
+      padding: 0;
     }
-
     header {
       background: #ff4757;
-      padding: 20px;
-      font-size: 2rem;
+      padding: 15px;
+      font-size: 1.5rem;
       font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      color: white;
     }
-
-    section {
-      padding: 40px 20px;
-    }
-
-    h2 {
-      margin-bottom: 20px;
-      font-size: 1.8rem;
-      color: #ff6b81;
-    }
-
-    /* ---------- Chart Container ---------- */
-    .chart-container {
-      width: 90%;
-      max-width: 600px;
-      margin: auto;
-      background: rgba(255,255,255,0.05);
-      border-radius: 15px;
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
       padding: 20px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
     }
-
-    /* ---------- Table ---------- */
-    table {
+    .box {
+      background: #1e1e1e;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    h2 { color: #ff4757; }
+    button {
+      padding: 10px 15px;
+      margin: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #ff4757;
+      color: #fff;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    button:hover { background: #ff6b81; }
+    input, select {
+      padding: 8px;
+      margin: 8px;
+      border: none;
+      border-radius: 6px;
       width: 90%;
-      margin: 40px auto;
+      max-width: 300px;
+    }
+    table {
+      width: 100%;
       border-collapse: collapse;
-      background: rgba(255,255,255,0.08);
-      border-radius: 10px;
-      overflow: hidden;
+      margin-top: 20px;
+      background: #2a2a2a;
     }
-
     th, td {
-      padding: 12px;
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: center;
     }
-
     th {
       background: #ff4757;
       color: white;
     }
-
-    tr:nth-child(even) {
-      background: rgba(255,255,255,0.05);
-    }
-
-    /* ---------- Footer ---------- */
-    footer {
-      background: #2f3542;
-      padding: 15px;
-      margin-top: 50px;
-      font-size: 0.9rem;
-    }
+    td { color: #ccc; }
   </style>
 </head>
 <body>
-  <header>🌍 Travel Analysis Dashboard</header>
+  <header>🌍 Travlysis - Travel Tracker</header>
 
-  <section>
-    <h2>Top Travel Destinations (2025)</h2>
-    <div class="chart-container">
-      <canvas id="travelChart"></canvas>
+  <div class="container">
+    <!-- GPS Tracking -->
+    <div class="box">
+      <h2>📍 GPS Location</h2>
+      <button onclick="getLocation()">Get Current Location</button>
+      <p id="gps">Location will appear here...</p>
     </div>
-  </section>
 
-  <section>
-    <h2>Travel Data Summary</h2>
-    <table>
-      <tr>
-        <th>Destination</th>
-        <th>Visitors</th>
-        <th>Popularity</th>
-      </tr>
-      <tr>
-        <td>Paris</td>
-        <td>1.2M</td>
-        <td>⭐⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td>Tokyo</td>
-        <td>950K</td>
-        <td>⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td>New York</td>
-        <td>870K</td>
-        <td>⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td>Dubai</td>
-        <td>780K</td>
-        <td>⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td>Rome</td>
-        <td>720K</td>
-        <td>⭐⭐⭐</td>
-      </tr>
-    </table>
-  </section>
+    <!-- Manual Entry -->
+    <div class="box">
+      <h2>✏️ Manual Travel Entry</h2>
+      <form id="manualForm">
+        <input type="text" id="place" placeholder="Place visited" required><br>
+        <input type="number" id="distance" placeholder="Distance (km)" required><br>
+        <select id="mode" required>
+          <option value="" disabled selected>Mode of Transport</option>
+          <option>Car</option>
+          <option>Bicycle</option>
+          <option>Walking</option>
+          <option>Public Transport</option>
+          <option>Other</option>
+        </select><br>
+        <button type="submit">Add Trip</button>
+      </form>
+      <table id="dataTable">
+        <tr>
+          <th>Place</th>
+          <th>Distance (km)</th>
+          <th>Mode</th>
+        </tr>
+      </table>
+    </div>
+  </div>
 
-  <footer>
-    © 2025 Travel Analysis | Built with ❤️ for explorers
-  </footer>
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // ---------- Chart Script ----------
-    const ctx = document.getElementById('travelChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Paris', 'Tokyo', 'New York', 'Dubai', 'Rome'],
-        datasets: [{
-          label: 'Visitors (in millions)',
-          data: [1.2, 0.95, 0.87, 0.78, 0.72],
-          backgroundColor: ['#ff4757', '#ffa502', '#1e90ff', '#2ed573', '#ff6b81'],
-          borderRadius: 8
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { labels: { color: '#f1f1f1' } }
-        },
-        scales: {
-          x: { ticks: { color: '#f1f1f1' } },
-          y: { ticks: { color: '#f1f1f1' } }
-        }
+    // ---------- GPS Tracker ----------
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+      } else {
+        document.getElementById("gps").innerText = "Geolocation is not supported by this browser.";
       }
+    }
+
+    function showPosition(position) {
+      document.getElementById("gps").innerText =
+        "Latitude: " + position.coords.latitude.toFixed(5) +
+        ", Longitude: " + position.coords.longitude.toFixed(5);
+    }
+
+    function showError(error) {
+      let msg = "";
+      switch(error.code) {
+        case error.PERMISSION_DENIED: msg = "❌ User denied GPS request."; break;
+        case error.POSITION_UNAVAILABLE: msg = "⚠️ Location unavailable."; break;
+        case error.TIMEOUT: msg = "⌛ Request timed out."; break;
+        default: msg = "Unknown error."; break;
+      }
+      document.getElementById("gps").innerText = msg;
+    }
+
+    // ---------- Manual Data Entry ----------
+    const form = document.getElementById("manualForm");
+    const table = document.getElementById("dataTable");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      let place = document.getElementById("place").value;
+      let distance = document.getElementById("distance").value;
+      let mode = document.getElementById("mode").value;
+
+      let row = table.insertRow();
+      row.insertCell(0).innerText = place;
+      row.insertCell(1).innerText = distance;
+      row.insertCell(2).innerText = mode;
+
+      form.reset();
     });
   </script>
 </body>
